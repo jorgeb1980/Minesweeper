@@ -32,8 +32,6 @@ def copyAndReplaceText(source, /*dest, */Closure replaceText){
 
 task executable(dependsOn: 'installApp') << {
 	def source = new File( project.getProjectDir().getAbsolutePath() + '/build/install/Minesweeper/bin/Minesweeper.bat' )
-	//def dest = new File( project.getProjectDir().getAbsolutePath() + '/build/install/Minesweeper/bin/buscaminasW.bat' )
-	//dest.createNewFile()
 
 	
 	copyAndReplaceText(source/*, dest*/){
@@ -44,5 +42,10 @@ task executable(dependsOn: 'installApp') << {
 	    tmp = tmp.replaceAll('"%JAVA_EXE%" %DEFAULT_JVM_OPTS%', 'start javaw.exe %DEFAULT_JVM_OPTS%')
 	    
 	    return tmp
+	}
+	
+	// Build a zip
+	new groovy.util.AntBuilder().zip( destFile: project.getProjectDir().getAbsolutePath() + "/build/install/Minesweeper.zip" ) {
+	  fileset( dir: project.getProjectDir().getAbsolutePath() + '/build/install/Minesweeper' )
 	}
 }

@@ -5,6 +5,8 @@ branches:
   only:
   - "/^v.+/"
   - master
+# Gradle build task that creates the application zip
+script: gradle executable
 deploy:
   skip_cleanup: true
   provider: releases

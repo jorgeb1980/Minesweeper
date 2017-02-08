@@ -1,0 +1,15 @@
+language: java
+jdk:
+- oraclejdk6
+branches:
+  only:
+  - "/^v.+/"
+  - master
+deploy:
+  skip_cleanup: true
+  provider: releases
+  api_key:
+    secure: elAXoCiHlPmjpJoQuXg1wdRIe4QnltNecMH9sNDfN2tULFfyd9Bd3GRo8KBF92gmF1ejigd2W64lXy5OX7McvJ6EyHNX7ymEon+Wc0Bqv/Wv45Rbk9Xl/1qMowwPkB8wym0eSvy/0Mx2tAkT+zb+dWlOGXQlQOzZp/nASoVdYRCNX4ATHlqeFinZ03MulcRxZMg6La2EAsHx6cqN08B4oVRdK2psBbUo87Pi0FSqiuXls0vZnhfBYHNLfLWDXswT1pRPWstdT3AEox1fKs+yA1bLu8T4deFIVWYeLmpDfpkVNH9o/kRZ+WiOo3qJsPAalyQz9C87Eogo3hY5ABy9yAFf25DWLwwOJjVnYtIS9iJqn0zuB7MWCCJDGXYFTbyGxF/4gQv8qE5BXDJB24NrI8whitpJTdV9KzcYXTxlz0LcUscF0fFw80m5LC1oMXfCNDni0Vu2iQFZg7H97gqiKHGqr7jCOC3lCS9ABSMdHkfeXaWxNJY+wSTuQU9lKO5VU0QjZLwEnfe1sqm86mUnwkK2eCf0TzBC9/W+rB12CoEpo5lwUf8pety7M6L+UX4PQIYtv4wiD+d5R6pXraie4nBxUEnIeS21HixqvRGkiVV3r02wPsIOUW3xjYsCeHIkgNyFkT2kVbyXTGIMgNCjeeVX9x4wINDjt/hcP+TofuU=
+  file: build/install/Minesweeper.zip
+  on:
+    tags: true

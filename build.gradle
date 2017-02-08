@@ -1,0 +1,51 @@
+apply plugin: 'eclipse'
+apply plugin: 'java'
+apply plugin: 'application'
+
+
+System.setProperty('file.encoding', 'UTF-8')
+
+mainClassName = 'minesweeper.gui.Main'
+
+compileJava.options.encoding = 'ISO-8859-1'
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+dependencies {
+	compile 'com.jhlabs:filters:2.0.235-1'
+	compile 'org.apache.sanselan:sanselan:0.97-incubator'
+	compile 'org.slf4j:slf4j-api:1.7.12'
+}
+
+// Replace start script
+
+def copyAndReplaceText(source, /*dest, */Closure replaceText){
+    source.write(replaceText(source.text))
+}
+
+
+task executable(dependsOn: 'installApp') << {
+	def source = new File( project.getProjectDir().getAbsolutePath() + '/build/install/Minesweeper/bin/Minesweeper.bat' )
+
+	
+	copyAndReplaceText(source/*, dest*/){
+		def tmp = it
+		//tmp = tmp.replaceAll('%JAVA_HOME%', '"%JAVA_HOME%"')
+	    //tmp = tmp.replaceAll('set JAVA_EXE="%JAVA_HOME%"/bin/java.exe', 'set JAVA_EXE="%JAVA_HOME%"/bin/javaw.exe')
+	    //tmp = tmp.replaceAll('"%JAVA_EXE%"', 'start "%JAVA_EXE%"')
+	    tmp = tmp.replaceAll('"%JAVA_EXE%" %DEFAULT_JVM_OPTS%', 'start javaw.exe %DEFAULT_JVM_OPTS%')
+	    
+	    return tmp
+	}
+	
+	// Build a zip
+	new groovy.util.AntBuilder().zip( destFile: project.getProjectDir().getAbsolutePath() + "/build/install/Minesweeper.zip" ) {
+	  fileset( dir: project.getProjectDir().getAbsolutePath() + '/build/install/Minesweeper' )
+	}
+}

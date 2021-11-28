@@ -424,7 +424,6 @@ public class GamePanel extends JPanel {
 		}
 
 		// Getters
-
 		public int getRow() {
 			return row;
 		}
@@ -434,7 +433,6 @@ public class GamePanel extends JPanel {
 		}
 
 		// Setters
-
 		public void setColor(Color color) {
 			setBackground(color);
 		}
@@ -473,7 +471,7 @@ public class GamePanel extends JPanel {
 		// El panel
 		private GamePanel gamePanel = null;
 
-		// Reloj gráfico
+		// Reloj grï¿½fico
 		private JTextField clock = null;
 
 		// ---------------------------------------------------

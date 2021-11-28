@@ -13,7 +13,7 @@ public class ClockThread extends Thread {
 	// -------------------------------------------------
 	// CLASS MEMBERS
 
-	// Singleton instance of the thread (now I woud do it with an Enumeration,
+	// Singleton instance of the thread (now I would do it with an Enumeration,
 	// probably)
 	private static ClockThread instance;
 
@@ -27,16 +27,13 @@ public class ClockThread extends Thread {
 	// -------------------------------------------------
 	// CLASS METHODS
 
-	// Se deja privado el constructor como parte del patrón Singleton,
-	// para evitar que se instancien ejemplares del hilo fuera de nuestro
-	// control.
-	private ClockThread(JTextField reloj) {
-		clock = reloj;
+	private ClockThread(JTextField clock) {
+		this.clock = clock;
 		seconds = 0;
 	}
 
 	// Resets the counter
-	public static void reset(JTextField reloj) {
+	public static void reset(JTextField clock) {
 		if (instance != null) {
 			// Tries to interrupt the current thread. If any problem raises,
 			// we get an InterruptedException; if not, we just change our state
@@ -45,7 +42,7 @@ public class ClockThread extends Thread {
 		// Leave the former instance for the garbage collector
 		instance = null;
 		// Create a new instance
-		instance = new ClockThread(reloj);
+		instance = new ClockThread(clock);
 	}
 
 	// This one will make the thread start the counter
@@ -61,12 +58,7 @@ public class ClockThread extends Thread {
 				// Paint the time in the GUI (using invokeLater in order not to
 				// modify
 				// UI elements from another thread)
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						clock.setText(Long.toString(seconds++));
-					}
-				});
+				SwingUtilities.invokeLater(() -> clock.setText(Long.toString(seconds++)));
 				// Wait for a second
 				sleep(SECOND_TIME_MILLIS);
 			}

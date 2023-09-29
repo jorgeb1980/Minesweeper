@@ -1,13 +1,13 @@
 package minesweeper.gui;
 
-import javax.swing.JFrame;
-import javax.swing.BorderFactory;
-import javax.swing.UIManager;
+import javax.swing.*;
 
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Color;
+
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class Main {
 	// ----------------------------------------------
@@ -28,7 +28,7 @@ public class Main {
 		mainWindow.getContentPane().setLayout(gridBagLayout1);
 		// Aspect and behavior of the main window
 		mainWindow.setLocation(200, 200);
-		mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainWindow.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		mainWindow.setSize(570, 500);
 		mainWindow.setTitle("Minesweeper");
 		// Create a game panel

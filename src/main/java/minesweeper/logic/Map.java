@@ -9,7 +9,7 @@ public class Map {
 	// CLASS MEMBERS
 
 	// Slots matrix
-	private Slot[][] matrix;
+	final private Slot[][] matrix;
 
 	// -----------------------------------------------
 	// CLASS METHODS
@@ -34,10 +34,6 @@ public class Map {
 		return matrix[theRow][theColumn].hasMine();
 	}
 
-	public boolean hasBeenVisitedThisTurn(int theRow, int theColumn) {
-		return matrix[theRow][theColumn].hasBeenVisitedThisTurn();
-	}
-
 	public boolean isHidden(int theRow, int theColumn) {
 		return matrix[theRow][theColumn].isHidden();
 	}
@@ -54,10 +50,6 @@ public class Map {
 
 	public void setHasMine(int theRow, int theColumn) {
 		matrix[theRow][theColumn].setHasMine(true);
-	}
-
-	public void setHasBeenVisitedThisTurn(int theRow, int theColumn) {
-		setHasBeenVisitedThisTurn(theRow, theColumn, true);
 	}
 
 	public void setHasBeenVisitedThisTurn(int theRow, int theColumn, boolean valor) {
@@ -116,8 +108,7 @@ public class Map {
 				// If there is any unmarked hidden slot, or a wrongly marked bombed
 				//	slot, we are not yet done
 				if ((slot.isHidden() && !slot.isSuspicious())
-						|| (slot.isHidden() && slot.isSuspicious() && !slot
-								.hasMine())) {
+						|| (slot.isHidden() && !slot.hasMine())) {
 					ret = false;
 				}
 				theColumn++;
@@ -301,32 +292,7 @@ public class Map {
 		return ret;
 	}
 
-	/**
-	 * 25-sep-2005
-	 * This method returns a view of the map in the form of a byte array.
-	 * Map copied by rows
-	 * 
-	 * @return An array of 2-byte 'records'.  The first byte means if the slot
-	 * is hidden or not; the second one is the number of mines around the slot.
-	 * This is the information thought necessary for a 2-player game (if that
-	 * was going to be implemented)
-	 */
-	public byte[] exportMapView() {
-		// Return value
-		byte[] map = new byte[Constants.ROWS * Constants.COLUMNS * 2];
-
-		// Run through the array by rows
-		int index = 0;
-		for (int i = 0; i < Constants.ROWS; i++) {
-			for (int j = 0; j < Constants.COLUMNS; j++) {
-				map[index++] = (byte) (matrix[i][j].hidden ? 0x01 : 0x00);
-				map[index++] = (byte) getMinesAround(i, j);
-			}
-		}
-		return map;
-	}
-
-	private class Slot {
+	private static class Slot {
 		// -----------------------------------------------
 		// CLASS MEMBERS
 

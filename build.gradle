@@ -35,7 +35,8 @@ tasks.register("executable") {
 
 		copyAndReplaceText(source) {
 			def tmp = it
-			tmp = tmp.replaceAll('"%JAVA_EXE%" %DEFAULT_JVM_OPTS%', 'start javaw.exe %DEFAULT_JVM_OPTS%')
+			tmp = tmp.replaceAll("set JAVA_EXE=%JAVA_HOME%/bin/java.exe", "set JAVA_EXE=%JAVA_HOME%/bin/javaw.exe")
+			tmp = tmp.replaceAll('"%JAVA_EXE%" %DEFAULT_JVM_OPTS%', 'start %JAVA_EXE% %DEFAULT_JVM_OPTS%')
 
 			return tmp
 		}

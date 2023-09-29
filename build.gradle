@@ -9,8 +9,8 @@ mainClassName = 'minesweeper.gui.Main'
 
 compileJava.options.encoding = 'ISO-8859-1'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 20
+targetCompatibility = 20
 
 repositories {
 	mavenLocal()
@@ -18,9 +18,9 @@ repositories {
 }
 
 dependencies {
-	compile 'com.jhlabs:filters:2.0.235-1'
-	compile 'org.apache.sanselan:sanselan:0.97-incubator'
-	compile 'org.slf4j:slf4j-api:1.7.32'
+	implementation 'com.jhlabs:filters:2.0.235-1'
+	implementation 'org.apache.sanselan:sanselan:0.97-incubator'
+	implementation 'org.slf4j:slf4j-api:1.7.32'
 }
 
 // Replace start script

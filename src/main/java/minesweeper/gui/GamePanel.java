@@ -1,36 +1,20 @@
 package minesweeper.gui;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.HeadlessException;
-import java.awt.Image;
-import java.awt.Insets;
+import com.jhlabs.image.MapColorsFilter;
+import minesweeper.Constants;
+import minesweeper.logic.BombException;
+import minesweeper.logic.Map;
+import org.apache.sanselan.common.byteSources.ByteSourceInputStream;
+import org.apache.sanselan.formats.gif.GifImageParser;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.text.MessageFormat;
 import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.border.Border;
-
-import minesweeper.Constants;
-import minesweeper.logic.BombException;
-import minesweeper.logic.Map;
-
-import org.apache.sanselan.common.byteSources.ByteSourceInputStream;
-import org.apache.sanselan.formats.gif.GifImageParser;
-
-import com.jhlabs.image.MapColorsFilter;
 
 public class GamePanel extends JPanel {
 
@@ -157,7 +141,7 @@ public class GamePanel extends JPanel {
 					.getAllBufferedImages(new ByteSourceInputStream(
 							GamePanel.class.getClassLoader()
 									.getResourceAsStream(path), path));
-			if (images != null && images.size() > 0) {
+			if (images != null && !images.isEmpty()) {
 				ret = (BufferedImage) images.get(0);
 			}
 		} catch (Exception e) {
@@ -240,7 +224,7 @@ public class GamePanel extends JPanel {
 		}
 	}
 
-	protected void placeButtonsPanel(Observer observer, JTextField clock) {
+	private void placeButtonsPanel(Observer observer, JTextField clock) {
 		// Reset button and counters
 		resetButton = new JButton(smiley);
 		resetButton.setName(Constants.RESET);
@@ -374,7 +358,7 @@ public class GamePanel extends JPanel {
 				slot.setText(Constants.EMPTY_SLOT_TEXT);
 				slot.setIcon(null);
 			}
-		} else if (isMineStepOn && isSuspicious && !isThereAMine) {
+		} else if (isMineStepOn && !isThereAMine) {
 			slot.setIcon(wrongFlag);
 		} else if (isSuspicious) {
 			slot.setIcon(flag);
@@ -389,7 +373,7 @@ public class GamePanel extends JPanel {
 	}
 
 	// Private class defining a JLabel with coordinates
-	protected class GraphicSlot extends JLabel {
+	protected static class GraphicSlot extends JLabel {
 		// ---------------------------------------
 		// CLASS MEMBERS
 
@@ -432,11 +416,6 @@ public class GamePanel extends JPanel {
 			return column;
 		}
 
-		// Setters
-		public void setColor(Color color) {
-			setBackground(color);
-		}
-
 		// Nothing around, then nothing written
 		public void writeMinesNumber(int minesNumber) {
 			if (minesNumber != 0) {
@@ -464,7 +443,7 @@ public class GamePanel extends JPanel {
 
 	// Events observer
 	// Every slot is subscribed to it
-	private class Observer extends java.awt.event.MouseAdapter {
+	private static class Observer extends java.awt.event.MouseAdapter {
 		// ---------------------------------------------------
 		// CLASS MEMBERS
 
@@ -581,11 +560,9 @@ public class GamePanel extends JPanel {
 			gamePanel.setPlay(false);
 			long now = System.currentTimeMillis();
 			long time = now - gamePanel.getGameStart();
-			StringBuffer message = new StringBuffer(
-					Constants.YOU_HAVE_FINISHED_IN);
-			message.append(Math.round(time / 1000.0));
-			message.append(Constants.SECONDS);
-			JOptionPane.showMessageDialog(gamePanel, message.toString(),
+			String message = Constants.YOU_HAVE_FINISHED_IN + Math.round(time / 1000.0) +
+				Constants.SECONDS;
+			JOptionPane.showMessageDialog(gamePanel, message,
 					Constants.CONGRATULATIONS, JOptionPane.PLAIN_MESSAGE);
 		}
 	}

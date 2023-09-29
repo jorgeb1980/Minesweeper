@@ -3,6 +3,8 @@ Minesweeper  [![Build Status](https://travis-ci.org/jorgeb1980/Minesweeper.svg?b
 
 Simplified Java Swing clone of the classic Minesweeper
 
+Build with `./gradlew executable`
+
 Latest binary at
 https://github.com/jorgeb1980/Minesweeper/releases/latest
 

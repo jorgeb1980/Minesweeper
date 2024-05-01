@@ -1,6 +1,8 @@
 package minesweeper.gui;
 
 import com.jhlabs.image.MapColorsFilter;
+import lombok.Getter;
+import lombok.Setter;
 import minesweeper.Constants;
 import minesweeper.logic.BombException;
 import minesweeper.logic.Map;
@@ -13,24 +15,24 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+import java.io.Serial;
 import java.text.MessageFormat;
-import java.util.List;
+
+import static java.awt.Color.WHITE;
+import static java.awt.Font.BOLD;
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.CENTER;
+import static java.lang.System.currentTimeMillis;
+import static minesweeper.Constants.*;
 
 public class GamePanel extends JPanel {
 
 	// ------------------------------------------------------
 	// Constantes de la clase
 
-	/**
-	 * Added by Eclipse for serialization
-	 */
-	private static final long serialVersionUID = 6289403480407638347L;
-
 	// Borders definition
-	private static final Border BEVEL_BORDER = BorderFactory
-			.createRaisedBevelBorder();
-	private static final Border GRAY_BORDER = BorderFactory
-			.createLineBorder(Color.GRAY);
+	private static final Border BEVEL_BORDER = BorderFactory.createRaisedBevelBorder();
+	private static final Border GRAY_BORDER = BorderFactory.createLineBorder(Color.GRAY);
 	// Mine colors
 	private static final String[] COLORS = { "blue", "green", "red", "#000099",
 			"#996600", "#FF6600", "pink", "#99CC3" };
@@ -50,12 +52,17 @@ public class GamePanel extends JPanel {
 	protected JButton resetButton;
 
 	// Can we play?
-	private boolean play = true;
+	@Setter
+    private boolean play = true;
 
 	// Marks the start of the game
-	protected boolean firstMove = true;
+	@Setter
+    @Getter
+    protected boolean firstMove = true;
 
 	// Timestamp of the start of the game
+	@Getter
+	@Setter
 	protected long timestampGameStart = 0;
 
 	// Instances of the gif images
@@ -71,6 +78,8 @@ public class GamePanel extends JPanel {
 	private int columnLastMine = -1;
 
 	// Any mine step on?
+	@Getter
+	@Setter
 	protected boolean mineStepOn = false;
 
 	// Map object instance
@@ -98,51 +107,19 @@ public class GamePanel extends JPanel {
 		return play;
 	}
 
-	public boolean isFirstMove() {
-		return firstMove;
-	}
-
-	// Timestamp
-	public long getGameStart() {
-		return timestampGameStart;
-	}
-
-	public boolean mineStepOn() {
-		return mineStepOn;
-	}
-
-	// Setters
-
-	public void setPlay(boolean areWePlaying) {
-		play = areWePlaying;
-	}
-
-	public void setFirstMove(boolean theFirstMove) {
-		firstMove = theFirstMove;
-	}
-
-	public void setGameStart(long millis) {
-		timestampGameStart = millis;
-	}
-
-	public void setStepOnMine(boolean isMineStepOn) {
-		mineStepOn = isMineStepOn;
-	}
-
 	// Image managing
 
 	// Use sanselan in order to read the image
 	// Simply gets an image off a file
-	@SuppressWarnings("rawtypes")
 	private BufferedImage getImage(String path) {
 		BufferedImage ret = null;
 		try {
-			List images = new GifImageParser()
+			var images = new GifImageParser()
 					.getAllBufferedImages(new ByteSourceInputStream(
 							GamePanel.class.getClassLoader()
 									.getResourceAsStream(path), path));
 			if (images != null && !images.isEmpty()) {
-				ret = (BufferedImage) images.get(0);
+				ret = (BufferedImage) images.getFirst();
 			}
 		} catch (Exception e) {
 			// TODO: properly log exception
@@ -157,7 +134,7 @@ public class GamePanel extends JPanel {
 		try {
 			BufferedImage tmp = getImage(path);
 			if (tmp != null) {
-				MapColorsFilter f = new MapColorsFilter(filter.getRGB(),
+				var f = new MapColorsFilter(filter.getRGB(),
 				// This particular bit mask behaves as transparent behavior
 						0x00FFFFFF & filter.getRGB());
 				// Make sure we obtain a standard RGB image (with an alpha byte
@@ -181,15 +158,12 @@ public class GamePanel extends JPanel {
 	public GamePanel() {
 		try {
 			// Load the gif images
-			mine = new ImageIcon(filterImage(Constants.MINE_PATH, Color.WHITE));
-			flag = new ImageIcon(filterImage(Constants.FLAG_PATH, Color.WHITE));
-			redMine = new ImageIcon(getImage(Constants.RED_MINE_PATH));
-			questionMark = new ImageIcon(filterImage(
-					Constants.QUESTION_MARK_PATH, Color.WHITE));
-			wrongFlag = new ImageIcon(filterImage(Constants.WRONG_FLAG_PATH,
-					Color.WHITE));
-			smiley = new ImageIcon(filterImage(Constants.SMILEY_PATH,
-					Color.WHITE));
+			mine = new ImageIcon(filterImage(MINE_PATH, WHITE));
+			flag = new ImageIcon(filterImage(FLAG_PATH, WHITE));
+			redMine = new ImageIcon(getImage(RED_MINE_PATH));
+			questionMark = new ImageIcon(filterImage(QUESTION_MARK_PATH, WHITE));
+			wrongFlag = new ImageIcon(filterImage(WRONG_FLAG_PATH, WHITE));
+			smiley = new ImageIcon(filterImage(SMILEY_PATH, WHITE));
 			// Build the dialog
 			jbInit();
 		} catch (Exception e) {
@@ -200,26 +174,37 @@ public class GamePanel extends JPanel {
 	protected void jbInit() throws Exception {
 		this.setLayout(gridBagLayout1);
 		// Matrix of JLabels
-		matrix = new GraphicSlot[Constants.ROWS][Constants.COLUMNS];
-		JTextField clock = new JTextField(Constants.ZERO);
+		matrix = new GraphicSlot[ROWS][COLUMNS];
+		var clock = new JTextField(Constants.ZERO);
 		clock.setEnabled(false);
 		clock.setHorizontalAlignment(JTextField.RIGHT);
-		Observer observer = new Observer(this, clock);
+		var observer = new Observer(this, clock);
 		placeButtonsPanel(observer, clock);
 		// Place the JLabels
-		for (int row = 0; row < Constants.ROWS; row++) {
-			for (int column = 0; column < Constants.COLUMNS; column++) {
+		for (int row = 0; row < ROWS; row++) {
+			for (int column = 0; column < COLUMNS; column++) {
 				// Create the JLabel and get it into the panel
 				matrix[row][column] = new GraphicSlot(row, column);
 				matrix[row][column].addMouseListener(observer);
-				matrix[row][column].setMaximumSize(new java.awt.Dimension(
-						Constants.SLOT_WIDTH, Constants.SLOT_HEIGHT));
-				matrix[row][column].setPreferredSize(new java.awt.Dimension(
-						Constants.SLOT_WIDTH, Constants.SLOT_HEIGHT));
+				matrix[row][column].setMaximumSize(new Dimension(SLOT_WIDTH, SLOT_HEIGHT));
+				matrix[row][column].setPreferredSize(new Dimension(SLOT_WIDTH, SLOT_HEIGHT));
 				// We guess here that the constraints are ok ;-)
-				this.add(matrix[row][column], new GridBagConstraints(column,
-						row + 1, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER,
-						GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+				this.add(
+					matrix[row][column],
+					new GridBagConstraints(
+						column,
+						row + 1,
+						1,
+						1,
+						1.0,
+						1.0,
+						CENTER,
+						BOTH,
+						new Insets(0, 0, 0, 0),
+						0,
+						0
+					)
+				);
 			}
 		}
 	}
@@ -227,7 +212,7 @@ public class GamePanel extends JPanel {
 	private void placeButtonsPanel(Observer observer, JTextField clock) {
 		// Reset button and counters
 		resetButton = new JButton(smiley);
-		resetButton.setName(Constants.RESET);
+		resetButton.setName(RESET);
 		resetButton.addMouseListener(observer);
 		// Another panel to get a place in the grid for it
 		JPanel panelButtonCounter = new JPanel();
@@ -238,32 +223,32 @@ public class GamePanel extends JPanel {
 		box = new JTextField();
 		// Add the lower panel
 		this.add(panelButtonCounter, new GridBagConstraints(0, 0,
-				Constants.COLUMNS, 1, 1.0, 2.0, GridBagConstraints.CENTER,
-				GridBagConstraints.BOTH, new Insets(10, 10, 10, 10), 0, 0));
+				COLUMNS, 1, 1.0, 2.0, CENTER,
+				BOTH, new Insets(10, 10, 10, 10), 0, 0));
 		// Add clock, botton and mine counter to panel
 		panelButtonCounter.add(box, new GridBagConstraints(0, 0, 1, 1, 1.0,
-				1.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-				new Insets(5, 5, 5, 5), 0, 0));
+				1.0, CENTER, GridBagConstraints.HORIZONTAL,
+				new Insets(5, 5, 5, 5), 0, 0)
+		);
 
 		panelButtonCounter.add(resetButton, new GridBagConstraints(1, 0, 1, 1,
-				8.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
-				new Insets(5, 5, 5, 5), 0, 0));
+				8.0, 1.0, CENTER, GridBagConstraints.NONE,
+				new Insets(5, 5, 5, 5), 0, 0)
+		);
 
 		panelButtonCounter.add(clock, new GridBagConstraints(2, 0, 1, 1, 1.0,
-				1.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-				new Insets(5, 5, 5, 5), 0, 0));
+				1.0, CENTER, GridBagConstraints.HORIZONTAL,
+				new Insets(5, 5, 5, 5), 0, 0)
+		);
 		// Beware the clock size!!
-		clock.setMaximumSize(new java.awt.Dimension(Constants.CLOCK_WIDTH,
-				Constants.CLOCK_HEIGHT));
-		clock.setPreferredSize(new java.awt.Dimension(Constants.CLOCK_WIDTH,
-				Constants.CLOCK_HEIGHT));
+		clock.setMaximumSize(new java.awt.Dimension(CLOCK_WIDTH, CLOCK_HEIGHT));
+		clock.setPreferredSize(new java.awt.Dimension(CLOCK_WIDTH, CLOCK_HEIGHT));
 		// Boxes: format and color
 		box.setHorizontalAlignment(JTextField.RIGHT);
 		box.setText(Integer.toString(Constants.NUMBER_OF_MINES));
-		box.setSize(Constants.BOX_WIDTH, Constants.BOX_HEIGHT);
+		box.setSize(BOX_WIDTH, BOX_HEIGHT);
 		box.setEditable(false);
-		box.setPreferredSize(new java.awt.Dimension(Constants.BOX_WIDTH,
-				Constants.BOX_HEIGHT));
+		box.setPreferredSize(new java.awt.Dimension(BOX_WIDTH, BOX_HEIGHT));
 		// Colors
 		box.setBackground(Color.BLACK);
 		box.setForeground(Color.RED);
@@ -296,37 +281,33 @@ public class GamePanel extends JPanel {
 		// How many mines left?
 		box.setText(Integer.toString(map.remainingMines()));
 		// Run through the map
-		for (int row = 0; row < Constants.ROWS; row++) {
-			for (int column = 0; column < Constants.COLUMNS; column++) {
+		for (int row = 0; row < ROWS; row++) {
+			for (int column = 0; column < COLUMNS; column++) {
 				// If it is not hidden
 				GraphicSlot slot = matrix[row][column];
 				if (!map.isHidden(row, column)) {
 					map.setHasBeenVisitedThisTurn(row, column, false);
 					// Set background to gray
-					slot.setBackground(Constants.VISIBLE_BACKGROUND);
+					slot.setBackground(VISIBLE_BACKGROUND);
 					slot.setBorder(GRAY_BORDER);
 					slot.setIcon(null);
 					int numMinas = map.getMinesAround(row, column);
-					if (numMinas > 0) {
-						slot.setForeground(Color.BLACK);
-					} else {
-						slot.setForeground(Constants.VISIBLE_BACKGROUND);
-					}
+					if (numMinas > 0) slot.setForeground(Color.BLACK);
+					else slot.setForeground(VISIBLE_BACKGROUND);
 					slot.writeMinesNumber(numMinas);
 				} else if (isAMine) {
 					// In this case, we paint a hidden slot in the last turn,
 					// when the player just stept on a mine
-					paintHiddenSlot(slot, map.isSuspicious(row, column), true,
-							false);
+					paintHiddenSlot(slot, map.isSuspicious(row, column), true, false);
 				} else if (map.isSuspicious(row, column)) {
 					// Hidden and suspicious
 					paintHiddenSlot(slot, true, false, false);
-				} else if (map.hasQuestionMark(row, column)) {
+				} else if (map.isQuestionMark(row, column)) {
 					// With a question mark
 					paintHiddenSlot(slot, false, false, true);
 				} else {
 					if (isFirstMove() ||
-					// In this case, the slot returns to clean state
+						// In this case, the slot returns to clean state
 							(slot.getRow() == theRow && slot.getColumn() == theColumn)) {
 						// Hidden and free of suspicion
 						paintHiddenSlot(slot, false, false, false);
@@ -343,28 +324,20 @@ public class GamePanel extends JPanel {
 		slot.setBorder(BEVEL_BORDER);
 		slot.setBackground(Constants.HIDDEN_BACKGROUND);
 		// Was there a mine?
-		boolean isThereAMine = theMap().isThereAMine(slot.getRow(),
-				slot.getColumn());
+		var isThereAMine = theMap().isMine(slot.getRow(), slot.getColumn());
 		if (isMineStepOn && !isSuspicious) {
 			if (isThereAMine) {
-				if (slot.getRow() == rowLastMine
-						&& slot.getColumn() == columnLastMine) {
-					slot.setIcon(redMine);
-				} else {
-					slot.setIcon(mine);
-				}
+				if (slot.getRow() == rowLastMine && slot.getColumn() == columnLastMine) slot.setIcon(redMine);
+				else slot.setIcon(mine);
 			} else {
 				slot.setForeground(Constants.HIDDEN_BACKGROUND);
 				slot.setText(Constants.EMPTY_SLOT_TEXT);
 				slot.setIcon(null);
 			}
-		} else if (isMineStepOn && !isThereAMine) {
-			slot.setIcon(wrongFlag);
-		} else if (isSuspicious) {
-			slot.setIcon(flag);
-		} else if (hasQuestionMark) {
-			slot.setIcon(questionMark);
-		} else {
+		} else if (isMineStepOn && !isThereAMine) slot.setIcon(wrongFlag);
+		else if (isSuspicious) slot.setIcon(flag);
+		else if (hasQuestionMark) slot.setIcon(questionMark);
+		else {
 			slot.setForeground(Constants.HIDDEN_BACKGROUND);
 			slot.setText(Constants.EMPTY_SLOT_TEXT);
 			slot.setIcon(null);
@@ -373,17 +346,19 @@ public class GamePanel extends JPanel {
 	}
 
 	// Private class defining a JLabel with coordinates
-	protected static class GraphicSlot extends JLabel {
+	@Getter
+    protected static class GraphicSlot extends JLabel {
 		// ---------------------------------------
 		// CLASS MEMBERS
 
 		/**
 		 * Generated by Eclipse for serialization
 		 */
+		@Serial
 		private static final long serialVersionUID = 1437578630547476449L;
 		// Properties
-		private int row;
-		private int column;
+		private final int row;
+		private final int column;
 
 		// ---------------------------------------
 		// CLASS METHODS
@@ -398,32 +373,22 @@ public class GamePanel extends JPanel {
 			setBorder(BEVEL_BORDER);
 			setBackground(Constants.HIDDEN_BACKGROUND);
 			// Text font and alignment
-			setFont(new Font(Constants.FONT, Font.BOLD, Constants.FONT_SIZE));
+			setFont(new Font(FONT, BOLD, FONT_SIZE));
 			this.setHorizontalAlignment(JLabel.CENTER);
 			setForeground(Constants.HIDDEN_BACKGROUND);
 			setText(Constants.EMPTY_SLOT_TEXT);
 			// Text: orange by default
-			setPreferredSize(new java.awt.Dimension(Constants.SLOT_WIDTH,
-					Constants.SLOT_HEIGHT));
-		}
-
-		// Getters
-		public int getRow() {
-			return row;
-		}
-
-		public int getColumn() {
-			return column;
+			setPreferredSize(new Dimension(SLOT_WIDTH, SLOT_HEIGHT));
 		}
 
 		// Nothing around, then nothing written
 		public void writeMinesNumber(int minesNumber) {
 			if (minesNumber != 0) {
 				setText(formatMinesNumber(minesNumber));
-				setFont(new Font(Constants.FONT, Font.BOLD, Constants.FONT_SIZE));
+				setFont(new Font(FONT, BOLD, FONT_SIZE));
 			} else {
 				setText(Constants.EMPTY_SLOT_TEXT);
-				setFont(new Font(Constants.FONT, Font.BOLD, Constants.FONT_SIZE));
+				setFont(new Font(FONT, BOLD, FONT_SIZE));
 			}
 		}
 
@@ -436,8 +401,7 @@ public class GamePanel extends JPanel {
 		 *         slot
 		 */
 		private String formatMinesNumber(int minesNumber) {
-			return MessageFormat.format(MINE_TEMPLATE, COLORS[minesNumber - 1],
-					minesNumber);
+			return MessageFormat.format(MINE_TEMPLATE, COLORS[minesNumber - 1], minesNumber);
 		}
 	}
 
@@ -447,30 +411,28 @@ public class GamePanel extends JPanel {
 		// ---------------------------------------------------
 		// CLASS MEMBERS
 
-		// El panel
 		private GamePanel gamePanel = null;
 
-		// Reloj gr�fico
 		private JTextField clock = null;
 
 		// ---------------------------------------------------
 		// CLASS METHODS
 
-		public Observer(GamePanel panel, JTextField reloj) {
+		public Observer(GamePanel panel, JTextField clock) {
 			super();
 			gamePanel = panel;
-			clock = reloj;
+			this.clock = clock;
 			// The observer sets the clock to zero
-			ClockThread.reset(clock);
+			ClockThread.reset(this.clock);
 		}
 
 		// Capture a click
 		public void mousePressed(MouseEvent e) {
 			// Mine step on?
-			boolean mine = gamePanel.mineStepOn();
-			Component c = e.getComponent();
+			var mine = gamePanel.isMineStepOn();
+			var c = e.getComponent();
 			try {
-				Map map = theMap();
+				var map = theMap();
 				if (c == null) {
 					return;
 				}
@@ -480,12 +442,12 @@ public class GamePanel extends JPanel {
 				}
 				// If it comes from a button
 				else {
-					String name = c.getName();
-					if (name != null && name.equals(Constants.RESET)) {
+					var name = c.getName();
+					if (name != null && name.equals(RESET)) {
 						// Resetting the game!
 						map.populateMap();
 						gamePanel.setPlay(true);
-						gamePanel.setStepOnMine(false);
+						gamePanel.setMineStepOn(false);
 						gamePanel.setFirstMove(true);
 						mine = false;
 						clock.setText(Constants.ZERO);
@@ -493,17 +455,16 @@ public class GamePanel extends JPanel {
 				}
 			} catch (BombException eb) {
 				gamePanel.setPlay(false);
-				gamePanel.setStepOnMine(true);
+				gamePanel.setMineStepOn(true);
 				gamePanel.setLastMineCoordinates(eb.getRow(), eb.getColumn());
 				mine = true;
 				ClockThread.reset(clock);
 			} finally {
 				gamePanel.redrawGamePanel(
-						mine,
-						c instanceof GraphicSlot ? ((GraphicSlot) c).getRow()
-								: -1,
-						c instanceof GraphicSlot ? ((GraphicSlot) c)
-								.getColumn() : -1);
+					mine,
+					c instanceof GraphicSlot ? ((GraphicSlot) c).getRow() : -1,
+					c instanceof GraphicSlot ? ((GraphicSlot) c).getColumn() : -1
+				);
 			}
 		}
 
@@ -531,8 +492,8 @@ public class GamePanel extends JPanel {
 						// free of suspicion
 						map.setFreeOfSuspicion(row, column);
 						// mark with a question mark
-						map.addQuestionMark(row, column);
-					} else if (map.hasQuestionMark(row, column)) {
+						map.setQuestionMark(row, column);
+					} else if (map.isQuestionMark(row, column)) {
 						// clear it
 						map.clearQuestionMark(row, column);
 					} else {
@@ -547,7 +508,7 @@ public class GamePanel extends JPanel {
 			}
 			// Counter
 			if (gamePanel.isFirstMove()) {
-				gamePanel.setGameStart(System.currentTimeMillis());
+				gamePanel.setTimestampGameStart(currentTimeMillis());
 				gamePanel.setFirstMove(false);
 				ClockThread.startGame();
 			}
@@ -558,8 +519,8 @@ public class GamePanel extends JPanel {
 			// Stop the clock; then paint the message
 			ClockThread.reset(clock);
 			gamePanel.setPlay(false);
-			long now = System.currentTimeMillis();
-			long time = now - gamePanel.getGameStart();
+			long now = currentTimeMillis();
+			long time = now - gamePanel.getTimestampGameStart();
 			String message = Constants.YOU_HAVE_FINISHED_IN + Math.round(time / 1000.0) +
 				Constants.SECONDS;
 			JOptionPane.showMessageDialog(gamePanel, message,

@@ -7,6 +7,8 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Color;
 
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.CENTER;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class Main {
@@ -36,9 +38,19 @@ public class Main {
 		pj.setBorder(BorderFactory.createLineBorder(Color.WHITE));
 		mainWindow.getContentPane().add(
 				pj,
-				new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0,
-						GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-						new Insets(10, 10, 10, 10), 0, 0)
+				new GridBagConstraints(
+					0,
+					0,
+					1,
+					1,
+					1.0,
+					1.0,
+					CENTER,
+					BOTH,
+					new Insets(10, 10, 10, 10),
+					0,
+					0
+				)
 		);
 		// Show the panel (in a centered position)
 		mainWindow.setLocationRelativeTo(null);

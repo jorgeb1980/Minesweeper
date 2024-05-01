@@ -380,7 +380,7 @@ public class GamePanel extends JPanel {
 			setForeground(Constants.HIDDEN_BACKGROUND);
 			setText(Constants.EMPTY_SLOT_TEXT);
 			// Text: orange by default
-			setPreferredSize(new java.awt.Dimension(SLOT_WIDTH, SLOT_HEIGHT));
+			setPreferredSize(new Dimension(SLOT_WIDTH, SLOT_HEIGHT));
 		}
 
 		// Nothing around, then nothing written

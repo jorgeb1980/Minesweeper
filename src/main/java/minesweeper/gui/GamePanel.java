@@ -31,10 +31,8 @@ public class GamePanel extends JPanel {
 	// Constantes de la clase
 
 	// Borders definition
-	private static final Border BEVEL_BORDER = BorderFactory
-			.createRaisedBevelBorder();
-	private static final Border GRAY_BORDER = BorderFactory
-			.createLineBorder(Color.GRAY);
+	private static final Border BEVEL_BORDER = BorderFactory.createRaisedBevelBorder();
+	private static final Border GRAY_BORDER = BorderFactory.createLineBorder(Color.GRAY);
 	// Mine colors
 	private static final String[] COLORS = { "blue", "green", "red", "#000099",
 			"#996600", "#FF6600", "pink", "#99CC3" };

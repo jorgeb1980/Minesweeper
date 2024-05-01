@@ -9,8 +9,8 @@ mainClassName = 'minesweeper.gui.Main'
 
 compileJava.options.encoding = 'ISO-8859-1'
 
-sourceCompatibility = 20
-targetCompatibility = 20
+sourceCompatibility = 21
+targetCompatibility = 21
 
 repositories {
 	mavenLocal()
@@ -18,6 +18,9 @@ repositories {
 }
 
 dependencies {
+	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.32'
+	annotationProcessor 'org.projectlombok:lombok:1.18.32'
+
 	implementation 'com.jhlabs:filters:2.0.235-1'
 	implementation 'org.apache.sanselan:sanselan:0.97-incubator'
 	implementation 'org.slf4j:slf4j-api:1.7.32'

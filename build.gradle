@@ -1,25 +1,31 @@
-apply plugin: 'eclipse'
-apply plugin: 'java'
-apply plugin: 'application'
+plugins {
+	id 'java'
+	id 'application'
+	id 'distribution'
+	id("io.freefair.lombok") version "9.8.3"
+}
 
+group = 'minesweeper'
+version = '1.0.0'
 
-System.setProperty('file.encoding', 'UTF-8')
-
-mainClassName = 'minesweeper.gui.Main'
-
-compileJava.options.encoding = 'ISO-8859-1'
-
-sourceCompatibility = 21
-targetCompatibility = 21
+java {
+	// Configures Gradle to compile and run using a JDK 25 toolchain
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(25)
+	}
+}
 
 repositories {
 	mavenLocal()
 	mavenCentral()
 }
 
+application {
+	// Entry point for the './gradlew run' task
+	mainClass = 'minesweeper.gui.Main'
+}
+
 dependencies {
-	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.32'
-	annotationProcessor 'org.projectlombok:lombok:1.18.32'
 
 	implementation 'com.jhlabs:filters:2.0.235-1'
 	implementation 'org.apache.sanselan:sanselan:0.97-incubator'
@@ -31,24 +37,34 @@ def copyAndReplaceText(source, Closure replaceText){
     source.write(replaceText(source.text))
 }
 
-tasks.register("executable") {
+distributions {
+	minesweeper {
+		distributionBaseName = 'Minesweeper'
+		contents {
+			from layout.buildDirectory.dir('install/Minesweeper')
+		}
+	}
+}
+
+tasks.register("adapt_resources") {
 	doLast {
-		def source = new File(project.getProjectDir().getAbsolutePath() + '/build/install/Minesweeper/bin/Minesweeper.bat')
-
-
-		copyAndReplaceText(source) {
+		copyAndReplaceText(new File('./build/install/Minesweeper/bin/Minesweeper.bat')) {
 			def tmp = it
 			tmp = tmp.replaceAll("set JAVA_EXE=%JAVA_HOME%/bin/java.exe", "set JAVA_EXE=%JAVA_HOME%/bin/javaw.exe")
 			tmp = tmp.replaceAll('"%JAVA_EXE%" %DEFAULT_JVM_OPTS%', 'start %JAVA_EXE% %DEFAULT_JVM_OPTS%')
 
 			return tmp
 		}
-
-		// Build a zip
-		new groovy.util.AntBuilder().zip(destFile: project.getProjectDir().getAbsolutePath() + "/build/install/Minesweeper.zip") {
-			fileset(dir: project.getProjectDir().getAbsolutePath() + '/build/install/Minesweeper')
-		}
 	}
 }
 
-tasks.executable { dependsOn(installDist) }
+tasks.adapt_resources { dependsOn(installDist) }
+
+tasks.named('minesweeperDistZip', Zip) {
+	dependsOn tasks.named('adapt_resources')
+	destinationDirectory = layout.buildDirectory.dir('install')
+	archiveFileName = 'Minesweeper.zip'
+}
+
+tasks.register('executable') { dependsOn('minesweeperDistZip') }
+

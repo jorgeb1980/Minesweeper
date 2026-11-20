@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'minesweeper'
-version = '1.0.0'
+version = '1.0.2'
 
 java {
 	// Configures Gradle to compile and run using a JDK 25 toolchain
@@ -29,7 +29,6 @@ dependencies {
 
 	implementation 'com.jhlabs:filters:2.0.235-1'
 	implementation 'org.apache.sanselan:sanselan:0.97-incubator'
-	implementation 'org.slf4j:slf4j-api:1.7.32'
 }
 
 // Replace start script
